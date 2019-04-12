@@ -16,13 +16,18 @@ class Window(QGraphicsView):
 		self.List = np.array(self.cursor.fetchall())
 		self.List = sorted(self.List.transpose()[0])
 		
+	# make all layout-------	
+		# Initialize tab layout
+		self.tabs = QTabWidget() #creat tab object includes all tab
+		self.tabs.setTabsClosable(True) #set tabs closable
+		self.tabs.tabCloseRequested.connect(self.tabs.removeTab) #you can connect it to a any fuction you made
+		
 
 def main():
 	app = QApplication(sys.argv)
 	ex = Window('StockData.db')
 	ex.show()
 	sys.exit(app.exec_())
-
 
 if __name__ == '__main__':
 	main()
