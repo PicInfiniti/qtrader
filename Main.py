@@ -17,23 +17,38 @@ class Window(QGraphicsView):
 		self.List = np.array(self.cursor.fetchall())
 		self.List = sorted(self.List.transpose()[0])
 		
-	# make all layout...	
+	# make all widget...	
 		# tab widject
 		self.tabs = QTabWidget() #creat tab object includes all tab
 		self.tabs.setTabsClosable(True) #set tabs closable
 		self.tabs.tabCloseRequested.connect(self.tabs.removeTab) #you can connect it to a any fuction you made
 		
 		# Button  widject
-		self.button = QPushButton('Add Plot')# make button
-		self.button.clicked.connect(self.getItem)# connect to getitem function
+		self.button = QPushButton('Add Plot') #make button
+		self.button.clicked.connect(self.getItem) #connect to getitem function
 
 		# linedit widget
 		self.le = QLineEdit(self) #make linedit
 		self.le.textChanged.connect(self.refine) #convert text to arbic
 		self.completer = QCompleter() #make autocompleter
-		self.completer.setModel(QStringListModel(self.List)) # add List of stock to completer
+		self.completer.setModel(QStringListModel(self.List)) #add List of stock to completer
 		self.le.setCompleter(self.completer) #connect copmpleter to linedit
 		self.le.returnPressed.connect(self.pushButtonOK) #connect to pushButtonOK function after press ENTER
+
+
+	# Initialize main figure and layout
+		# figure property
+		self.resize(800, 600) #defult scheme size
+		self.setWindowTitle('QTrader') #Window title
+
+		# set layouts
+		self.Vlayout = QVBoxLayout()
+		self.Vlayout.addWidget(self.tabs)
+		self.Hlayout = QHBoxLayout()
+		self.Hlayout.addWidget(self.button)
+		self.Hlayout.addWidget(self.le)
+		self.Vlayout.addLayout(self.Hlayout)
+		self.setLayout(self.Vlayout)
 
 	def getItem(self):
 		item, ok = QInputDialog.getItem(
