@@ -1,5 +1,6 @@
 from Subfiles.DataBase import *
 from Subfiles.Classes import *
+from datetime import date
 
 class Window(QGraphicsView):
 	def __init__(self, DB='StockData.db', parent=None):
@@ -65,7 +66,25 @@ class Window(QGraphicsView):
 
 	def plot(self, stockname, Bars=300): #open new tab and plot on it
 		self.tabs.setCurrentIndex(self.tabs.addTab(
-			Plot_Panel(stockname, []), stockname))
+			Plot_Panel(stockname, self.get_data(stockname)), stockname))
+	
+	def get_data(self, stockname): #extarct history from database
+		if not self.cursor.execute(
+				"SELECT * FROM sqlite_master WHERE name = 'NAMAD'".replace('NAMAD', stockname)).fetchone():
+			Get_Csv(id2stock(stockname))# if history not exit in data base download it
+        
+		elif self.cursor.execute(
+ 				"SELECT * FROM NAMAD LIMIT 1".replace('NAMAD', stockname)).fetchone()[0]!=int(date.today().strftime('%Y%m%d')):
+			Get_Csv(id2stock(stockname)) #if data exist but not uptodate update it
+				
+		self.cursor.execute(
+				'SELECT * FROM NAMAD ORDER BY Date ASC'.replace('NAMAD', stockname)) #get and sort data ascendig; 0 index has oldest date. [20161017, 20161018, ..., 20190413]
+		data = np.array(self.cursor.fetchall(), int) #store data in numpy array with int format
+		for i in range(len(data)): #turn date to matplotlib datatime format
+			data[i][0] = mdates.date2num(
+				dt.datetime.strptime(str(data[i][0]), '%Y%m%d'))
+
+		return data
 
 def main():
 	app = QApplication(sys.argv)
