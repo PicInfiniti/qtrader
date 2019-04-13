@@ -1,9 +1,5 @@
 from Subfiles.DataBase import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-import sys,sqlite3
-import numpy as np
+from Subfiles.Classes import *
 
 class Window(QGraphicsView):
 	def __init__(self, DB='StockData.db', parent=None):
@@ -35,7 +31,6 @@ class Window(QGraphicsView):
 		self.le.setCompleter(self.completer) #connect copmpleter to linedit
 		self.le.returnPressed.connect(self.pushButtonOK) #connect to pushButtonOK function after press ENTER
 
-
 	# Initialize main figure and layout
 		# figure property
 		self.resize(800, 600) #defult scheme size
@@ -50,18 +45,27 @@ class Window(QGraphicsView):
 		self.Vlayout.addLayout(self.Hlayout)
 		self.setLayout(self.Vlayout)
 
-	def getItem(self):
+	def getItem(self): #input dialog for self.button
 		item, ok = QInputDialog.getItem(
 			self, "select input dialog", "list of languages", self.List, 0, False)
+			
+		if ok and item:
+			stockname = Persian(item)
+			self.le.setText(item)
+			self.plot(stockname)
 
-	def refine(self):
+	def refine(self): #refine entry text in self.le
 		stockname = Persian(self.le.text())
 		self.le.setText(stockname)
 
-	def pushButtonOK(self):
+	def pushButtonOK(self): #call self.plot function
 		stockname = Persian(self.le.text())
 		if stockname in self.List:
 			self.plot(stockname)
+
+	def plot(self, stockname, Bars=300): #open new tab and plot on it
+		self.tabs.setCurrentIndex(self.tabs.addTab(
+			Plot_Panel(stockname, []), stockname))
 
 def main():
 	app = QApplication(sys.argv)
