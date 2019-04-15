@@ -46,6 +46,10 @@ class Window(QGraphicsView):
 		self.Vlayout.addLayout(self.Hlayout)
 		self.setLayout(self.Vlayout)
 
+		# set default plotting
+		self.le.setText('بورس')
+		self.plot(Persian('بورس'))
+
 	def getItem(self): #input dialog for self.button
 		item, ok = QInputDialog.getItem(
 			self, "select input dialog", "list of languages", self.List, 0, False)
