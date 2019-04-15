@@ -75,11 +75,11 @@ def Get_Csv(ID = '30703140537034664'):
 	#sample table: CREATE TABLE IF NOT EXISTS "کگهر"
 	c.execute(STRING.replace('NAMAD', '"'+Namad+'"'))
 	#clear table for new data
-	c.execute('DELETE FROM NAMAD'.replace('NAMAD',Namad))
+	c.execute('DELETE FROM "NAMAD"'.replace('NAMAD',Namad))
 	#put data in table
 	for i in response:
 		#sample string: INSERT INTO سامان VALUES ("20120509","1250",...,"2590752","357"))
-		STRING = 'INSERT INTO NAMAD VALUES ("'+ i.replace('@','","') +'")'
+		STRING = 'INSERT INTO "NAMAD" VALUES ("'+ i.replace('@','","') +'")'
 		c.execute(STRING.replace('NAMAD',Namad))
 
 	# Save (commit) the changes
