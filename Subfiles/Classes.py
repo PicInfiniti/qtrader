@@ -25,6 +25,9 @@ class Plot_Panel(QWidget):
 		self.Pax = self.Pfigure.addPlot(0, 0)
 		self.Pax.showGrid(x=True, y=True)
 
+		# add graphical object to Pax
+		self.Pax.addItem(WesternCandlestick(self.data[-self.Property['Bars']:,[0,3,1,2,4]])) #add WesternCandlestick
+
 		# Mlayout is main layout
 		self.Mlayout = QVBoxLayout()
 		self.Mlayout.addWidget(self.Pfigure)
