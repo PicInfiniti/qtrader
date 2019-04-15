@@ -1,12 +1,12 @@
 import requests,ast,csv,codecs, sys, random, os
 import numpy as np
 import pyqtgraph as pg
-import matplotlib.dates as mdates
 import datetime as dt
 from matplotlib.ticker import Formatter
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from Subfiles.Subclasses import *
 
 class Plot_Panel(QWidget):
 	'''S این کلاس شامل تمام اشیای داخل تب می‌باشد'''
@@ -22,11 +22,12 @@ class Plot_Panel(QWidget):
 
 		# create price axis
 		self.Pfigure = pg.GraphicsWindow()
-		self.Pax = self.Pfigure.addPlot(0, 0)
+		self.Pax = self.Pfigure.addPlot(0, 0, axisItems={'bottom': TimeAxisItem(orientation='bottom')}) #make axis with & custom timeaxis
 		self.Pax.showGrid(x=True, y=True)
 
 		# add graphical object to Pax
-		self.Pax.addItem(WesternCandlestick(self.data[-self.Property['Bars']:,[0,3,1,2,4]])) #add WesternCandlestick
+		self.Pax.addItem(WesternCandlestick(
+			self.data[-self.Property['Bars']:,[0,3,1,2,4]])) #add WesternCandlestick
 
 		# Mlayout is main layout
 		self.Mlayout = QVBoxLayout()
