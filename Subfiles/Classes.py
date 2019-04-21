@@ -20,6 +20,17 @@ class Plot_Panel(QWidget):
 		self.data = data #stock history (open, close, ...)
 		Number_of_Bars = len(self.data) #len of history
 
+		# Slider with lable
+		self.sl = QSlider() #make slider
+		self.label = QLabel() #make lable for slider
+		self.label.setText(str([Number_of_Bars, self.Property['Bars']]
+		                 [Number_of_Bars > self.Property['Bars']])) #set defult lable
+		self.sl.setMinimum(25) #set minimu slider value
+		self.sl.setMaximum(Number_of_Bars) #set maxinmum slider value
+		self.sl.setValue([Number_of_Bars, self.Property['Bars']]
+		                 [Number_of_Bars > self.Property['Bars']]) #set defult slider value
+
+		self.sl.valueChanged.connect(self.valueChanged) #connet to self.valueChanged function when someone change slider
 		# create price axis
 		self.Pfigure = pg.GraphicsWindow()
 		self.Pax = self.Pfigure.addPlot(0, 0, axisItems={'bottom': TimeAxisItem(orientation='bottom')}) #make axis with & custom timeaxis
@@ -29,12 +40,27 @@ class Plot_Panel(QWidget):
 		self.Pax.addItem(WesternCandlestick(
 			self.data[-self.Property['Bars']:,[0,3,1,2,4]])) #add WesternCandlestick
 
-		# Mlayout is main layout
-		self.Mlayout = QVBoxLayout()
-		self.Mlayout.addWidget(self.Pfigure)
+		# Hlayout is main layout
+		Mlayout = QVBoxLayout()
+
+		# make a vertical layout
+		Vlayout = QVBoxLayout() 
+		Vlayout.addWidget(self.label) #add lable to Vlayout
+		Vlayout.addWidget(self.sl) #add slider to Vlayout
+
+		# make a horizontal layout
+		Hlayout = QHBoxLayout() 
+		Hlayout.addLayout(Vlayout)
+		Hlayout.addWidget(self.Pfigure) #add figure to Hlyaout
 
 		# add every thing to Mlayout
-		self.setLayout(self.Mlayout)
+		self.setLayout(Hlayout)
+
+	def valueChanged(self): #run when slider changed
+		self.label.setText(str(self.sl.value())) #update slider lable
+		self.Pax.clear() #clearPax axes for new plot
+		self.Pax.addItem(WesternCandlestick(
+			self.data[-self.sl.value():,[0,3,1,2,4]])) #plot new WesternCandlestick
 
 class WesternCandlestick(QGraphicsObject): #make WesternCandlestick QGraphicsObject for plot price history
 	# order data: time, open, close, min, max
