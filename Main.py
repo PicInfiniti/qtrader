@@ -1,6 +1,5 @@
 from Subfiles.DataBase import *
-from Subfiles.Classes import *
-from datetime import date
+from Subfiles.Classes import * 
 
 class Window(QGraphicsView):
 	def __init__(self, DB='StockData.db', parent=None):
@@ -78,7 +77,7 @@ class Window(QGraphicsView):
 			Get_Csv(id2stock(stockname))# if history not exit in data base download it
         
 		elif self.cursor.execute(
- 				'SELECT * FROM "NAMAD" LIMIT 1'.replace('NAMAD', stockname)).fetchone()[0]!=int(date.today().strftime('%Y%m%d')):
+ 				'SELECT * FROM "NAMAD" LIMIT 1'.replace('NAMAD', stockname)).fetchone()[0]!=int(dt.date.today().strftime('%Y%m%d')):
 			Get_Csv(id2stock(stockname)) #if data exist but not uptodate update it
 				
 		self.cursor.execute(

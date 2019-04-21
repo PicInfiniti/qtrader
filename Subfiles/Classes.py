@@ -1,7 +1,7 @@
 import requests,ast,csv,codecs, sys, random, os
 import numpy as np
-import pyqtgraph as pg
 import datetime as dt
+import pyqtgraph as pg
 from matplotlib.ticker import Formatter
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -38,7 +38,7 @@ class Plot_Panel(QWidget):
 
 		# add graphical object to Pax
 		self.Pax.addItem(WesternCandlestick(
-			self.data[-self.Property['Bars']:,[0,3,1,2,4]])) #add WesternCandlestick
+			self.data[-self.Property['Bars']:,[0,1,2,3,4,5]])) #add WesternCandlestick
 
 		# Hlayout is main layout
 		Mlayout = QVBoxLayout()
@@ -60,15 +60,14 @@ class Plot_Panel(QWidget):
 		self.label.setText(str(self.sl.value())) #update slider lable
 		self.Pax.clear() #clearPax axes for new plot
 		self.Pax.addItem(WesternCandlestick(
-			self.data[-self.sl.value():,[0,3,1,2,4]])) #plot new WesternCandlestick
+			self.data[-self.sl.value():,[0,1,2,3,4,5]])) #plot new WesternCandlestick
 
 class WesternCandlestick(QGraphicsObject): #make WesternCandlestick QGraphicsObject for plot price history
 	# order data: time, open, close, min, max
 	def __init__(self, data):
 		QGraphicsObject.__init__(self)
-		self.data = data  ## data must have fields: time, Payani ,Hight, Low, close
-
-		self.generatePicture()
+		self.data = data  #data must have fields: time, Hight, Low, Payani, close, Open
+		self.generatePicture() #generate picture
 
 	def generatePicture(self):
 		## pre-computing a QPicture object allows paint() to run much more quickly, 
@@ -79,17 +78,20 @@ class WesternCandlestick(QGraphicsObject): #make WesternCandlestick QGraphicsObj
 		p = QPainter(self.picture)
 		p.setPen(pg.mkPen('c',width=2))
 
-		Date, Payani, Hight, Low, Close = self.data[0]
+		Date, Hight, Low, Payani, Close, Open = self.data[0]
 		p.drawLine(QPointF(Date, Low), QPointF(Date, Hight))
 		p.drawLine(QPointF(Date, Payani), QPointF(Date+OFFSET, Payani))
-		p.drawLine(QPointF(Date-OFFSET, Close), QPointF(Date, Close))
+		p.drawLine(QPointF(Date, Close), QPointF(Date+OFFSET, Close))
+		p.drawLine(QPointF(Date-OFFSET, Open), QPointF(Date, Open))
 		PreviousBar = Payani
 
-		for (Date, Payani, Hight, Low, Close) in self.data[1:]:
+		for (Date, Hight, Low, Payani, Close, Open) in self.data[1:]:
 			p.setPen(pg.mkPen(['r','g'][PreviousBar < Close],width=2))
 			p.drawLine(QPointF(Date, Low), QPointF(Date, Hight))
+			p.drawLine(QPointF(Date, Close), QPointF(Date+OFFSET, Close))
+			p.drawLine(QPointF(Date-OFFSET, Open), QPointF(Date, Open))
+			p.setPen(pg.mkPen('y',width=2))
 			p.drawLine(QPointF(Date, Payani), QPointF(Date+OFFSET, Payani))
-			p.drawLine(QPointF(Date-OFFSET, Close), QPointF(Date, Close))
 			PreviousBar = Payani
 		p.end()
 
