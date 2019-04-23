@@ -1,4 +1,5 @@
 import requests,ast,csv,codecs, sys, random, os
+from math import ceil
 import numpy as np
 import datetime as dt
 import pyqtgraph as pg
@@ -86,12 +87,18 @@ class WesternCandlestick(QGraphicsObject): #make WesternCandlestick QGraphicsObj
 		PreviousBar = Payani
 
 		for (Date, Hight, Low, Payani, Close, Open) in self.data[1:]:
+			p.setPen(pg.mkPen('y',width=2))
+			p.drawLine(QPointF(Date, Payani), QPointF(Date+OFFSET, Payani))
+			p.setPen(pg.mkPen('y',width=.5,style=Qt.DotLine))
+			p.drawLine(QPointF(Date-OFFSET, int(1.05*PreviousBar)), QPointF(Date+OFFSET, int(1.05*PreviousBar)))
+			p.drawLine(QPointF(Date-OFFSET, ceil(.95*PreviousBar)), QPointF(Date+OFFSET, ceil(.95*PreviousBar)))
+			p.drawLine(QPointF(Date, ceil(.95*PreviousBar)), QPointF(Date, int(1.05*PreviousBar)))
+
 			p.setPen(pg.mkPen(['r','g'][PreviousBar < Close],width=2))
 			p.drawLine(QPointF(Date, Low), QPointF(Date, Hight))
 			p.drawLine(QPointF(Date, Close), QPointF(Date+OFFSET, Close))
 			p.drawLine(QPointF(Date-OFFSET, Open), QPointF(Date, Open))
-			p.setPen(pg.mkPen('y',width=2))
-			p.drawLine(QPointF(Date, Payani), QPointF(Date+OFFSET, Payani))
+			
 			PreviousBar = Payani
 		p.end()
 

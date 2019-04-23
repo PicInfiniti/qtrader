@@ -12,7 +12,15 @@ class Window(QGraphicsView):
 		self.cursor.execute('SELECT Namad FROM StockInfo')
 		self.List = np.array(self.cursor.fetchall())
 		self.List = sorted(self.List.transpose()[0])
-		
+		'''
+		mainMenu = self.menuBar()
+		fileMenu = mainMenu.addMenu('File')
+		editMenu = mainMenu.addMenu('Edit')
+		viewMenu = mainMenu.addMenu('View')
+		searchMenu = mainMenu.addMenu('Search')
+		toolsMenu = mainMenu.addMenu('Tools')
+		helpMenu = mainMenu.addMenu('Help')
+		'''
 	# make all widget...	
 		# tab widject
 		self.tabs = QTabWidget() #creat tab object includes all tab
