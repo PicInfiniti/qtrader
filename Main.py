@@ -1,6 +1,22 @@
 from Subfiles.DataBase import *
 from Subfiles.Classes import * 
 
+class MainWindow(QMainWindow):
+	def __init__(self, parent = None):
+		super(MainWindow, self).__init__(parent)
+
+		bar = self.menuBar()
+		File = bar.addMenu("File")
+		File.addAction("New")
+		File.addAction("save")
+		File.addAction("quit")
+
+		self.items = QDockWidget()
+		self.items.setWidget(QTextEdit())
+		self.setCentralWidget(Window('StockData.db'))
+		self.addDockWidget(Qt.RightDockWidgetArea, self.items)
+		self.setWindowTitle("QTrader")
+
 class Window(QGraphicsView):
 	def __init__(self, DB='StockData.db', parent=None):
 		super(Window, self).__init__(parent)
@@ -12,15 +28,7 @@ class Window(QGraphicsView):
 		self.cursor.execute('SELECT Namad FROM StockInfo')
 		self.List = np.array(self.cursor.fetchall())
 		self.List = sorted(self.List.transpose()[0])
-		'''
-		mainMenu = self.menuBar()
-		fileMenu = mainMenu.addMenu('File')
-		editMenu = mainMenu.addMenu('Edit')
-		viewMenu = mainMenu.addMenu('View')
-		searchMenu = mainMenu.addMenu('Search')
-		toolsMenu = mainMenu.addMenu('Tools')
-		helpMenu = mainMenu.addMenu('Help')
-		'''
+
 	# make all widget...	
 		# tab widject
 		self.tabs = QTabWidget() #creat tab object includes all tab
@@ -99,7 +107,7 @@ class Window(QGraphicsView):
 
 def main():
 	app = QApplication(sys.argv)
-	ex = Window('StockData.db')
+	ex = MainWindow()
 	ex.show()
 	sys.exit(app.exec_())
 
