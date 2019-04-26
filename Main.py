@@ -2,24 +2,9 @@ from Subfiles.DataBase import *
 from Subfiles.Classes import * 
 
 class MainWindow(QMainWindow):
-	def __init__(self, parent = None):
+	def __init__(self, DB='StockData.db', parent = None):
 		super(MainWindow, self).__init__(parent)
-
-		bar = self.menuBar()
-		File = bar.addMenu("File")
-		File.addAction("New")
-		File.addAction("save")
-		File.addAction("quit")
-
-		self.items = QDockWidget()
-		self.items.setWidget(QTextEdit())
-		self.setCentralWidget(Window('StockData.db'))
-		self.addDockWidget(Qt.RightDockWidgetArea, self.items)
-		self.setWindowTitle("QTrader")
-
-class Window(QGraphicsView):
-	def __init__(self, DB='StockData.db', parent=None):
-		super(Window, self).__init__(parent)
+		self.setWindowTitle('QTrader')
 		# configure dataBase
 		self.conn = sqlite3.connect(DB)
 		self.cursor = self.conn.cursor()
@@ -29,16 +14,6 @@ class Window(QGraphicsView):
 		self.List = np.array(self.cursor.fetchall())
 		self.List = sorted(self.List.transpose()[0])
 
-	# make all widget...	
-		# tab widject
-		self.tabs = QTabWidget() #creat tab object includes all tab
-		self.tabs.setTabsClosable(True) #set tabs closable
-		self.tabs.tabCloseRequested.connect(self.tabs.removeTab) #you can connect it to a any fuction you made
-		
-		# Button  widject
-		self.button = QPushButton('Add Plot') #make button
-		self.button.clicked.connect(self.getItem) #connect to getitem function
-
 		# linedit widget
 		self.le = QLineEdit(self) #make linedit
 		self.le.textChanged.connect(self.refine) #convert text to arbic
@@ -47,36 +22,13 @@ class Window(QGraphicsView):
 		self.le.setCompleter(self.completer) #connect copmpleter to linedit
 		self.le.returnPressed.connect(self.pushButtonOK) #connect to pushButtonOK function after press ENTER
 
-	# Initialize main figure and layout
-		# figure property
-		self.resize(800, 600) #defult scheme size
-		self.setWindowTitle('QTrader') #Window title
-
-		# set layouts
-		self.Vlayout = QVBoxLayout()
-		self.Vlayout.addWidget(self.tabs)
-		self.Hlayout = QHBoxLayout()
-		self.Hlayout.addWidget(self.button)
-		self.Hlayout.addWidget(self.le)
-		self.Vlayout.addLayout(self.Hlayout)
-		self.setLayout(self.Vlayout)
-
-		# set default plotting
-		self.le.setText('بورس')
-		self.plot(Persian('بورس'))
-
-	def getItem(self): #input dialog for self.button
-		item, ok = QInputDialog.getItem(
-			self, "select input dialog", "list of languages", self.List, 0, False)
+		self.setCentralWidget(self.le)
+		for stockname in ['بورس', 'ثنوسا']:
+			self.plot(Persian(stockname))
 			
-		if ok and item:
-			stockname = Persian(item)
-			self.le.setText(item)
-			self.plot(stockname)
-
 	def refine(self): #refine entry text in self.le
 		stockname = Persian(self.le.text())
-		self.le.setText(stockname)
+		self.le.setText(stockname)		
 
 	def pushButtonOK(self): #call self.plot function
 		stockname = Persian(self.le.text())
@@ -84,8 +36,9 @@ class Window(QGraphicsView):
 			self.plot(stockname)
 
 	def plot(self, stockname, Bars=300): #open new tab and plot on it
-		self.tabs.setCurrentIndex(self.tabs.addTab(
-			Plot_Panel(stockname, self.get_data(stockname)), stockname))
+		dock = QDockWidget(stockname,self)
+		dock.setWidget(Plot_Panel(stockname, self.get_data(stockname)))
+		self.addDockWidget(Qt.TopDockWidgetArea, dock)
 	
 	def get_data(self, stockname): #extarct history from database
 		if not self.cursor.execute(
@@ -102,7 +55,7 @@ class Window(QGraphicsView):
 		for i in range(len(data)): #turn date to matplotlib datatime format
 			data[i][0] = mdates.date2num(
 				dt.datetime.strptime(str(data[i][0]), '%Y%m%d'))
-
+				
 		return data
 
 def main():
