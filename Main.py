@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
 		self.le.returnPressed.connect(self.pushButtonOK) #connect to pushButtonOK function after press ENTER
 
 		self.setCentralWidget(self.le)
-		for stockname in ['بورس', 'ثنوسا']:
+		for stockname in ['بورس', 'سپ', 'اخزا706']:
 			self.plot(Persian(stockname))
 			
 	def refine(self): #refine entry text in self.le

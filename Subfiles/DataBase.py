@@ -20,7 +20,7 @@ def UpdateDB():
 	#this function update Stock view includs all stock
 	#Extrct Data from tsetmc
 	page = requests.get("http://www.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0")
-	t = page.content.split('@')[2].split(';')
+	t = page.content.decode().split('@')[2].split(';')
 
 	#Open DataBase
 	conn = sqlite3.connect('StockData.db')
@@ -98,4 +98,3 @@ def id2stock(Id,inverse=0):
 	for i in OutPut:
 		if Id in i:
 			return i[inverse]
-
