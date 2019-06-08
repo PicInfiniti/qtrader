@@ -4,7 +4,6 @@ from Subfiles.Classes import *
 class MainWindow(QMainWindow):
 	def __init__(self, DB='StockData.db', parent = None):
 		super(MainWindow, self).__init__(parent)
-		self.setWindowTitle('QTrader')
 		# configure dataBase
 		self.conn = sqlite3.connect(DB)
 		self.cursor = self.conn.cursor()
@@ -23,9 +22,27 @@ class MainWindow(QMainWindow):
 		self.le.returnPressed.connect(self.pushButtonOK) #connect to pushButtonOK function after press ENTER
 
 		self.setCentralWidget(self.le)
-		for stockname in ['بورس', 'سپ', 'اخزا706']:
+		for stockname in ['بورس']:
 			self.plot(Persian(stockname))
-			
+		
+		#Menu Bar
+		self.initUI()
+	def initUI(self):
+		self.setWindowTitle("QTrader")
+		mainMenu = self.menuBar()
+		fileMenu = mainMenu.addMenu('File')
+		editMenu = mainMenu.addMenu('Edit')
+		viewMenu = mainMenu.addMenu('View')
+		searchMenu = mainMenu.addMenu('Search')
+		toolsMenu = mainMenu.addMenu('Tools')
+		helpMenu = mainMenu.addMenu('Help')
+	#File
+		exitButton = QAction('Exit', self)
+		exitButton.setShortcut('Ctrl+Q')
+		exitButton.setStatusTip('Exit application')
+		exitButton.triggered.connect(self.close)
+		fileMenu.addAction(exitButton)
+
 	def refine(self): #refine entry text in self.le
 		stockname = Persian(self.le.text())
 		self.le.setText(stockname)		
@@ -44,7 +61,7 @@ class MainWindow(QMainWindow):
 		if not self.cursor.execute(
 				'SELECT * FROM sqlite_master WHERE name = "NAMAD"'.replace('NAMAD', stockname)).fetchone():
 			Get_Csv(id2stock(stockname))# if history not exit in data base download it
-        
+		
 		elif self.cursor.execute(
  				'SELECT * FROM "NAMAD" LIMIT 1'.replace('NAMAD', stockname)).fetchone()[0]!=int(dt.date.today().strftime('%Y%m%d')):
 			Get_Csv(id2stock(stockname)) #if data exist but not uptodate update it
