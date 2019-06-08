@@ -1,9 +1,11 @@
 from Subfiles.DataBase import *
 from Subfiles.Classes import * 
 
+
 class MainWindow(QMainWindow):
 	def __init__(self, DB='StockData.db', parent = None):
 		super(MainWindow, self).__init__(parent)
+		self.setWindowTitle("QTrader")
 		# configure dataBase
 		self.conn = sqlite3.connect(DB)
 		self.cursor = self.conn.cursor()
@@ -26,23 +28,13 @@ class MainWindow(QMainWindow):
 			self.plot(Persian(stockname))
 		
 		#Menu Bar
-		self.initUI()
-	def initUI(self):
-		self.setWindowTitle("QTrader")
-		mainMenu = self.menuBar()
-		fileMenu = mainMenu.addMenu('File')
-		editMenu = mainMenu.addMenu('Edit')
-		viewMenu = mainMenu.addMenu('View')
-		searchMenu = mainMenu.addMenu('Search')
-		toolsMenu = mainMenu.addMenu('Tools')
-		helpMenu = mainMenu.addMenu('Help')
-	#File
-		exitButton = QAction('Exit', self)
-		exitButton.setShortcut('Ctrl+Q')
-		exitButton.setStatusTip('Exit application')
-		exitButton.triggered.connect(self.close)
-		fileMenu.addAction(exitButton)
-
+		MenuBar(self)
+		#Tool Bar
+		ToolBar(self)
+		
+	def toolbtnpressed(self,a):
+		print ("pressed tool button is",a.text())
+		
 	def refine(self): #refine entry text in self.le
 		stockname = Persian(self.le.text())
 		self.le.setText(stockname)		
