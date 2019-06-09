@@ -6,6 +6,7 @@ class MainWindow(QMainWindow):
 	def __init__(self, DB='StockData.db', parent = None):
 		super(MainWindow, self).__init__(parent)
 		self.setWindowTitle("QTrader")
+		self.CurrentNamad = 0
 		# configure dataBase
 		self.conn = sqlite3.connect(DB)
 		self.cursor = self.conn.cursor()
@@ -31,9 +32,9 @@ class MainWindow(QMainWindow):
 		MenuBar(self)
 		#Tool Bar
 		ToolBar(self)
-		
+
 	def toolbtnpressed(self,a):
-		print ("pressed tool button is",a.text())
+		print ("pressed tool button is",self.CurrentNamad)
 		
 	def refine(self): #refine entry text in self.le
 		stockname = Persian(self.le.text())
@@ -45,7 +46,10 @@ class MainWindow(QMainWindow):
 			self.plot(stockname)
 
 	def plot(self, stockname, Bars=300): #open new tab and plot on it
+		
 		dock = QDockWidget(stockname,self)
+		dock.mousePressEvent = lambda x: assign(self, dock)
+
 		dock.setWidget(Plot_Panel(stockname, self.get_data(stockname)))
 		self.addDockWidget(Qt.TopDockWidgetArea, dock)
 	

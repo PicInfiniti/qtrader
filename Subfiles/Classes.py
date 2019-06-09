@@ -143,3 +143,6 @@ def ToolBar(self):
 		save = QAction("save",self)
 		tb.addAction(save)
 		tb.actionTriggered[QAction].connect(self.toolbtnpressed)
+		
+def assign(self,b):
+	self.CurrentNamad = b
