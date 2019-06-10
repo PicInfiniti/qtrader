@@ -18,7 +18,7 @@ class Plot_Panel(QWidget):
 				'Bars': 300,
 				'WesternCandlestick':1,
 				'Payani': 1,
-				'Boundri': 1,
+				'Boundary': 1,
 				} #store property of current tab
 
 		self.data = data #stock history (open, close, ...)
@@ -46,6 +46,9 @@ class Plot_Panel(QWidget):
 		# add graphical object to Pax
 		self.Pax.addItem(Payani(
 			self.data[-self.Property['Bars']:,[0,3]])) #add Payani
+		
+		self.Pax.addItem(Payani(
+			self.data[-self.Property['Bars']:,[0,3]])) #add Boundary
 		# Hlayout is main layout
 		Mlayout = QVBoxLayout()
 
@@ -69,5 +72,8 @@ class Plot_Panel(QWidget):
 			self.data[-self.sl.value():,[0,1,2,3,4,5]])) #plot new WesternCandlestick
 		self.Pax.addItem(Payani(
 			self.data[-self.sl.value():,[0,3]])) #add Payani
+			
+		self.Pax.addItem(Boundary(
+			self.data[-self.sl.value():,[0,3]])) #add Boundary
 
 
