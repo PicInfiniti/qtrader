@@ -1,5 +1,6 @@
 from Subfiles.DataBase import *
-from Subfiles.Classes import * 
+from Subfiles.Classes import *
+from Subfiles.Functions import * 
 
 
 class MainWindow(QMainWindow):
@@ -34,7 +35,7 @@ class MainWindow(QMainWindow):
 		ToolBar(self)
 
 	def toolbtnpressed(self,a):
-		print ("pressed tool button is",self.CurrentNamad)
+		print (a.text(),self.CurrentNamad)
 		
 	def refine(self): #refine entry text in self.le
 		stockname = Persian(self.le.text())
