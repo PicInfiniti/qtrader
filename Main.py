@@ -35,7 +35,8 @@ class MainWindow(QMainWindow):
 		ToolBar(self)
 
 	def toolbtnpressed(self,a):
-		print (a.text(),self.CurrentNamad)
+		self.CurrentNamad.widget().Property[a.text()] = [0,1][self.CurrentNamad.widget().Property[a.text()] == 0]
+		self.CurrentNamad.widget().valueChanged()
 		
 	def refine(self): #refine entry text in self.le
 		stockname = Persian(self.le.text())
@@ -47,13 +48,13 @@ class MainWindow(QMainWindow):
 			self.plot(stockname)
 
 	def plot(self, stockname, Bars=300): #open new tab and plot on it
-		
 		dock = QDockWidget(stockname,self)
 		dock.mousePressEvent = lambda x: assign(self, dock)
 
 		dock.setWidget(Plot_Panel(stockname, self.get_data(stockname)))
 		self.addDockWidget(Qt.TopDockWidgetArea, dock)
-	
+		self.CurrentNamad = dock
+		
 	def get_data(self, stockname): #extarct history from database
 		if not self.cursor.execute(
 				'SELECT * FROM sqlite_master WHERE name = "NAMAD"'.replace('NAMAD', stockname)).fetchone():

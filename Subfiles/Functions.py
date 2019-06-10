@@ -23,13 +23,13 @@ def MenuBar(self):
 def ToolBar(self):
 		tb = self.addToolBar("Indicators")
 		
-		new = QAction("new",self)
-		tb.addAction(new)
-
-		open = QAction("open",self)
-		tb.addAction(open)
-		save = QAction("save",self)
-		tb.addAction(save)
+		western = QAction(QIcon("Subfiles/pic/wcs.png"), "WesternCandlestick", self)
+		tb.addAction(western)
+		payani = QAction(QIcon("Subfiles/pic/P.png"), "Payani", self)
+		tb.addAction(payani)
+		boundry = QAction(QIcon("Subfiles/pic/B.png"), "Boundary", self)
+		tb.addAction(boundry)
+		
 		tb.actionTriggered[QAction].connect(self.toolbtnpressed)
 		
 def assign(self,b):
