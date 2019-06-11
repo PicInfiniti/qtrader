@@ -29,8 +29,10 @@ def ToolBar(self):
 		tb.addAction(payani)
 		boundry = QAction(QIcon("Subfiles/pic/B.png"), "Boundary", self)
 		tb.addAction(boundry)
-		boundry = QAction(QIcon("Subfiles/pic/Pl.png"), "Cross", self)
-		tb.addAction(boundry)
+		cross = QAction(QIcon("Subfiles/pic/Pl.png"), "Cross", self)
+		tb.addAction(cross)
+		period = QAction(QIcon("Subfiles/pic/Pa.png"), "Period", self)
+		tb.addAction(period)
 		
 		tb.actionTriggered[QAction].connect(self.toolbtnpressed)
 		

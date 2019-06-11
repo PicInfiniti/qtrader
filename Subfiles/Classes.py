@@ -19,7 +19,8 @@ class Plot_Panel(QWidget):
                 'WesternCandlestick':1,
                 'Payani': 1,
                 'Boundary': 1,
-                'Cross': 0
+                'Cross': 0,
+                'Period':1
                 } #store property of current tab
 
         self.data = data #stock history (open, close, ...)
@@ -41,21 +42,27 @@ class Plot_Panel(QWidget):
         self.Pax = self.Pfigure.addPlot(0, 0, axisItems={'bottom': TimeAxisItem(orientation='bottom')}) #make axis with & custom timeaxis
         self.Pax.showGrid(x=True, y=True)
         self.proxy = pg.SignalProxy(self.Pax.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
-        #self.vLine = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine = pg.InfiniteLine(angle=90, movable=False)
         self.hLine = pg.InfiniteLine(angle=0, movable=False, label='Price={value:0.2f} irr', labelOpts={'position':.1, 'color': (200,200,100), 'fill': (200,200,200,50)})
+
         if self.Property['Cross']:
-                #self.Pax.addItem(self.vLine, ignoreBounds=True)
+                self.Pax.addItem(self.vLine, ignoreBounds=True)
                 self.Pax.addItem(self.hLine, ignoreBounds=True)
         # add graphical object to Pax
         if self.Property['WesternCandlestick']:
-            self.Pax.addItem(WesternCandlestick(
-                self.data[-self.Property['Bars']:,[0,1,2,3,4,5]])) #add WesternCandlestick
+            www = WesternCandlestick(
+                self.data[-self.Property['Bars']:,[0,1,2,3,4,5]])
+
+            self.Pax.addItem(www) #add WesternCandlestick
         if self.Property['Payani']:
             self.Pax.addItem(Payani(
                 self.data[-self.Property['Bars']:,[0,3]])) #add Payani
         if self.Property['Boundary']:
             self.Pax.addItem(Boundary(
                 self.data[-self.Property['Bars']:,[0,3]])) #add Boundary
+        if self.Property['Period']:
+            Period(self.Pax)
+
         # Hlayout is main layout
         Mlayout = QVBoxLayout()
 
@@ -76,7 +83,7 @@ class Plot_Panel(QWidget):
         self.label.setText(str(self.sl.value())) #update slider lable
         self.Pax.clear() #clearPax axes for new plot
         if self.Property['Cross']:
-            #self.Pax.addItem(self.vLine, ignoreBounds=True)
+            self.Pax.addItem(self.vLine, ignoreBounds=True)
             self.Pax.addItem(self.hLine, ignoreBounds=True)
         if self.Property['WesternCandlestick']:
             self.Pax.addItem(WesternCandlestick(
@@ -87,11 +94,12 @@ class Plot_Panel(QWidget):
         if self.Property['Boundary']:
             self.Pax.addItem(Boundary(
                 self.data[-self.sl.value():,[0,3]])) #add Boundary
-
+        if self.Property['Period']:
+            Period(self.Pax)
+            
     def mouseMoved(self,evt):
         pos = evt[0]  ## using signal proxy turns original arguments into a tuple
         if self.Pax.sceneBoundingRect().contains(pos):
             mousePoint = self.Pax.vb.mapSceneToView(pos)
-            index = int(mousePoint.x())
-            #self.vLine.setPos(mousePoint.x())
+            self.vLine.setPos(mousePoint.x())
             self.hLine.setPos(mousePoint.y())
