@@ -24,6 +24,8 @@ class MainWindow(QMainWindow):
 		self.completer.setModel(QStringListModel(self.List)) #add List of stock to completer
 		self.le.setCompleter(self.completer) #connect copmpleter to linedit
 		self.le.returnPressed.connect(self.pushButtonOK) #connect to pushButtonOK function after press ENTER
+		
+		self.le2 = QLineEdit(self) #make linedit
 
 		self.setCentralWidget(self.le)
 		for stockname in ['بورس']:
@@ -56,13 +58,16 @@ class MainWindow(QMainWindow):
 		self.CurrentNamad = dock
 		
 	def get_data(self, stockname): #extarct history from database
-		if not self.cursor.execute(
-				'SELECT * FROM sqlite_master WHERE name = "NAMAD"'.replace('NAMAD', stockname)).fetchone():
-			Get_Csv(id2stock(stockname))# if history not exit in data base download it
-		
-		elif self.cursor.execute(
- 				'SELECT * FROM "NAMAD" LIMIT 1'.replace('NAMAD', stockname)).fetchone()[0]!=int(dt.date.today().strftime('%Y%m%d')):
-			Get_Csv(id2stock(stockname)) #if data exist but not uptodate update it
+		try:
+			if not self.cursor.execute(
+					'SELECT * FROM sqlite_master WHERE name = "NAMAD"'.replace('NAMAD', stockname)).fetchone():
+				Get_Csv(id2stock(stockname))# if history not exit in data base download it
+			
+			elif self.cursor.execute(
+	 				'SELECT * FROM "NAMAD" LIMIT 1'.replace('NAMAD', stockname)).fetchone()[0]!=int(dt.date.today().strftime('%Y%m%d')):
+				Get_Csv(id2stock(stockname)) #if data exist but not uptodate update it
+		except:
+			print ("Please Check your CONNECTION")
 				
 		self.cursor.execute(
 				'SELECT * FROM "NAMAD" ORDER BY Date ASC'.replace('NAMAD', stockname)) #get and sort data ascendig; 0 index has oldest date. [20161017, 20161018, ..., 20190413]
