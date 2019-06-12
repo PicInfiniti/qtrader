@@ -50,10 +50,8 @@ class Plot_Panel(QWidget):
                 self.Pax.addItem(self.hLine, ignoreBounds=True)
         # add graphical object to Pax
         if self.Property['WesternCandlestick']:
-            www = WesternCandlestick(
-                self.data[-self.Property['Bars']:,[0,1,2,3,4,5]])
-
-            self.Pax.addItem(www) #add WesternCandlestick
+            self.Pax.addItem(WesternCandlestick(
+                self.data[-self.Property['Bars']:,[0,1,2,3,4,5]])) #add WesternCandlestick
         if self.Property['Payani']:
             self.Pax.addItem(Payani(
                 self.data[-self.Property['Bars']:,[0,3]])) #add Payani
