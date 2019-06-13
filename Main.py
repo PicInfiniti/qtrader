@@ -37,6 +37,23 @@ class MainWindow(QMainWindow):
 		ToolBar(self)
 
 	def toolbtnpressed(self,a):
+		if a.text()=='Period':
+			text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter text:')
+			if '-' in text and ok:
+				jump, walker = text.split('-')
+				walker = mdates.date2num(jdt.date.togregorian(dt.datetime.strptime(walker, '%Y%m%d')))#BBBBUUUUGGGG
+				self.CurrentNamad.widget().Property['PeriodP'] = [int(jump), walker]
+				self.CurrentNamad.widget().Property['Period'] = 1
+				self.CurrentNamad.widget().valueChanged()
+				return
+			elif not text and ok:
+				self.CurrentNamad.widget().Property['PeriodP']=False
+				self.CurrentNamad.widget().Property['Period'] = 0
+				self.CurrentNamad.widget().valueChanged()
+				return
+			else:
+				return
+				
 		self.CurrentNamad.widget().Property[a.text()] = [0,1][self.CurrentNamad.widget().Property[a.text()] == 0]
 		self.CurrentNamad.widget().valueChanged()
 		

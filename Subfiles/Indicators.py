@@ -108,8 +108,9 @@ class InfiniteLine(pg.InfiniteLine):
 		self.Link = Link
 		
 	def mouseDragEvent(self, ev):
-		if self.Link :
-			self.Link.mouseDragEvent(ev)
+		if self.Link:
+			for i in self.Link:
+				i.mouseDragEvent(ev)
 
 		if self.movable and ev.button() == Qt.LeftButton:
 			if ev.isStart():
@@ -127,19 +128,56 @@ class InfiniteLine(pg.InfiniteLine):
 				self.moving = False
 				self.sigPositionChangeFinished.emit(self)
 				
-class Period(): #make WesternCandlestick QGraphicsObject for plot price history
-	def __init__(self, Pax):
+class Period: #make WesternCandlestick QGraphicsObject for plot price history
+	def __init__(self, Pax, time):
 		self.Pax = Pax
+		self.Time = time
 		self.Draw(self.Pax)
         
-	def Draw(self, Pax):
-		Line = InfiniteLine(pos=736695,angle=90, movable=True)
-		Line2 = InfiniteLine(Link=Line, pos=736675,angle=90, movable=True)
-		Line3 = InfiniteLine(Link=Line2, pos=736685,angle=90, movable=True,pen='g')
+	def Draw(self, Pax,jump=7,time=736695):
+		walker = self.Time[0]
+		while walker < self.Time[1]:
+			self.Pax.addItem(InfiniteLine(pos=walker,angle=90))
+			walker+=jump
+		
+		#Line.Link = [Line2, Line3]
 
-        
-		self.Pax.addItem(Line)
-		self.Pax.addItem(Line2)
-		self.Pax.addItem(Line3)
+class Period2(QGraphicsObject): #make Payani Indicator for plot price history
 
+	def __init__(self, data, jump=7,walker=736695):
+		QGraphicsObject.__init__(self)
+		self.data = data  #data must have fields: time, payani
+		self.generatePicture(jump,walker) #generate picture
+		
+			
+	def generatePicture(self,jump,walker):
+		## pre-computing a QPicture object allows paint() to run much more quickly, 
+		## rather than re-drawing the shapes every time.
+		Date, Hight, Low = self.data.T
+		Max = max(Hight)
+		Min = min(Low)
+		OFFSET = 1
+		self.picture = QPicture()
+		p = QPainter(self.picture)
+		p.setPen(pg.mkPen('r',width=1,style=Qt.DotLine))
+		
+		walker = [walker, Date[0]][walker < Date[0]]
+		while walker<Date[-1]:
+			p.drawLine(QPointF(walker, Min), QPointF(walker, Max))
+			walker += jump
+		
+		walker = [walker, Date[0]][walker < Date[0]]
+		while walker>Date[0]:
+			walker -= jump
+			p.drawLine(QPointF(walker, Min), QPointF(walker, Max))
+			
 
+	def paint(self, p, *args):
+		p.drawPicture(0, 0, self.picture)
+
+	def boundingRect(self):
+		## boundingRect _must_ indicate the entire area that will be drawn on
+		## or else we will get artifacts and possibly crashing.
+		## (in this case, QPicture does all the work of computing the bouning rect for us)
+
+		return QRectF(self.picture.boundingRect())
