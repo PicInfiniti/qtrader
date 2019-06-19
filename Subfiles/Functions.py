@@ -38,3 +38,15 @@ def ToolBar(self):
 		
 def assign(self,b):
 	self.CurrentNamad = b
+
+def DicData(List): #convert data to dic by time keys
+	D = {}
+	for i in List:
+		D[i[0]]= i[1:]
+		
+	return D
+
+def ModifyDictaToPrint(List):
+	H, L, P, C, O, yP, Val, Vol, N = List
+	String = "H: "+str(H)+", L: "+str(L)+", P: "+str(P)+", C: "+str(C)+", V: "+str(Vol)+", N: "+str(N)
+	return String

@@ -9,6 +9,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from Subfiles.Subclasses import *
 from Subfiles.Indicators import *
+from Subfiles.Functions import * 
 
 class Plot_Panel(QWidget):
 	'''S این کلاس شامل تمام اشیای داخل تب می‌باشد'''
@@ -25,6 +26,7 @@ class Plot_Panel(QWidget):
 		        } #store property of current tab
 
 		self.data = data #stock history (open, close, ...)
+		self.dicdata = DicData(data)
 		Number_of_Bars = len(self.data) #len of history
 
 		# Slider with lable
@@ -104,6 +106,10 @@ class Plot_Panel(QWidget):
 			mousePoint = self.Pax.vb.mapSceneToView(pos)
 			self.vLine.setPos(mousePoint.x())
 			self.hLine.setPos(mousePoint.y())
+			if int(mousePoint.x()) in self.dicdata.keys():
+				data = ModifyDictaToPrint(self.dicdata[int(mousePoint.x())])
+				self.parentWidget().parentWidget().statusBar.showMessage(
+					mdates.num2date(int(mousePoint.x())).strftime('%Y.%m.%d')+", "+data)
 
 class InputDialog(QWidget):
 	def __init__(self):
