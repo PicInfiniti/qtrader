@@ -16,9 +16,9 @@ class Plot_Panel(QWidget):
 		super(Plot_Panel, self).__init__(parent) #I don't what is this; but don't work without it
 		self.Property = {'StockName': StockName,
 		        'Bars': 300,
-		        'WesternCandlestick':1,
+		        'WesternCandlestick':0,
 		        'Payani': 1,
-		        'Boundary': 1,
+		        'Boundary': 0,
 		        'Cross': 0,
 		        'Period':0,
 		        'PeriodP':False

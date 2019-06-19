@@ -35,6 +35,10 @@ class MainWindow(QMainWindow):
 		MenuBar(self)
 		#Tool Bar
 		ToolBar(self)
+		#statusBar
+		self.statusBar = QStatusBar()
+		self.setStatusBar(self.statusBar)
+		self.statusBar.showMessage("Great SiaVash")
 
 	def toolbtnpressed(self,a):
 		if a.text()=='Period':
