@@ -9,7 +9,6 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from Subfiles.Subclasses import *
 from Subfiles.Indicators import *
-from Subfiles.Functions import * 
 
 class Plot_Panel(QWidget):
 	'''S این کلاس شامل تمام اشیای داخل تب می‌باشد'''
@@ -26,7 +25,6 @@ class Plot_Panel(QWidget):
 		        } #store property of current tab
 
 		self.data = data #stock history (open, close, ...)
-		self.dicdata = DicData(data)
 		Number_of_Bars = len(self.data) #len of history
 
 		# Ledft Slider with lable
@@ -97,7 +95,7 @@ class Plot_Panel(QWidget):
 		self.sl.setMinimum(self.rsl.value()+25)
 		self.rsl.setMaximum(self.sl.value()-25)
 		self.label.setText(str(self.sl.value())) #update slider lable
-		self.rlabel.setText(str(self.rsl.value())) #update slider lable
+		self.rlabel.setText(str(self.sl.value())) #update slider lable
 		self.Pax.clear() #clearPax axes for new plot
 		if self.Property['Cross']:
 			self.Pax.addItem(self.vLine, ignoreBounds=True)
@@ -121,10 +119,6 @@ class Plot_Panel(QWidget):
 			mousePoint = self.Pax.vb.mapSceneToView(pos)
 			self.vLine.setPos(mousePoint.x())
 			self.hLine.setPos(mousePoint.y())
-			if int(mousePoint.x()) in self.dicdata.keys():
-				data = ModifyDictaToPrint(self.dicdata[int(mousePoint.x())])
-				self.parentWidget().parentWidget().statusBar.showMessage(
-					mdates.num2date(int(mousePoint.x())).strftime('%Y.%m.%d')+", "+data)
 
 class InputDialog(QWidget):
 	def __init__(self):
@@ -138,34 +132,3 @@ class InputDialog(QWidget):
 			self.Property['Period'] = 0
 			self.CurrentNamad.widget().valueChanged()
 
-class DateDialog(QDialog):
-    def __init__(self, parent = None):
-        super(DateDialog, self).__init__(parent)
-
-        layout = QVBoxLayout(self)
-
-        # nice widget for editing the date
-        self.datetime = QDateTimeEdit(self)
-        self.datetime.setCalendarPopup(True)
-        self.datetime.setDateTime(QDateTime.currentDateTime())
-        layout.addWidget(self.datetime)
-
-        # OK and Cancel buttons
-        buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
-            Qt.Horizontal, self)
-        buttons.accepted.connect(self.accept)
-        buttons.rejected.connect(self.reject)
-        layout.addWidget(buttons)
-
-    # get current date and time from the dialog
-    def dateTime(self):
-        return self.datetime.dateTime()
-
-    # static method to create the dialog and return (date, time, accepted)
-    @staticmethod
-    def getDateTime(parent = None):
-        dialog = DateDialog(parent)
-        result = dialog.exec_()
-        date = dialog.dateTime()
-        return (date.date(), date.time(), result == QDialog.Accepted)
