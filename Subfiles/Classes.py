@@ -129,7 +129,7 @@ class Plot_Panel(QWidget):
 		if self.Property['COV']:
 			data = self.Property['COVP']
 			self.Pax.addItem(Payani(
-				data[-self.sl.value():,[0,3]],color='r')) #add COV    
+				data[-self.sl.value():len(data)-self.rsl.value(),[0,3]],color='r')) #add COV    
 				
 	def mouseMoved(self,evt):
 		pos = evt[0]  ## using signal proxy turns original arguments into a tuple
