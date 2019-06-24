@@ -10,11 +10,16 @@ from PyQt5.QtWidgets import *
 from Subfiles.Subclasses import *
 from Subfiles.Indicators import *
 from Subfiles.Functions import * 
+from Subfiles.DataBase import *
 
 class Plot_Panel(QWidget):
 	'''S این کلاس شامل تمام اشیای داخل تب می‌باشد'''
-	def __init__(self, StockName, data ,parent=None):
+	def __init__(self, StockName, data ,DB='StockData.db', parent=None):
 		super(Plot_Panel, self).__init__(parent) #I don't what is this; but don't work without it
+				# configure dataBase
+		self.conn = sqlite3.connect(DB)
+		self.cursor = self.conn.cursor()
+		
 		self.Property = {'StockName': StockName,
 		        'Bars': 300,
 		        'WesternCandlestick':0,
@@ -22,7 +27,9 @@ class Plot_Panel(QWidget):
 		        'Boundary': 0,
 		        'Cross': 0,
 		        'Period':0,
-		        'PeriodP':False
+		        'PeriodP':False,
+		        'COV':0,
+		        'COVP': False
 		        } #store property of current tab
 
 		self.data = data #stock history (open, close, ...)
@@ -64,6 +71,11 @@ class Plot_Panel(QWidget):
 		if self.Property['Period']:
 			self.Pax.addItem(Period2(
 				self.data[-self.Property['Bars']:,[0,1,2]], self.Property['PeriodP'][0], self.Property['PeriodP'][1]))
+				
+		if self.Property['COV']:
+			data = self.Property['COVP']
+			self.Pax.addItem(Payani(
+				data[-self.Property['Bars']:,[0,3]],color='r')) #add COV
 
 		# Hlayout is main layout
 		Mlayout = QVBoxLayout()
@@ -99,7 +111,11 @@ class Plot_Panel(QWidget):
 		if self.Property['Period']:
 			self.Pax.addItem(Period2
 				(self.data[-self.sl.value():,[0,1,2]], self.Property['PeriodP'][0], self.Property['PeriodP'][1]))
-		    
+		if self.Property['COV']:
+			data = self.Property['COVP']
+			self.Pax.addItem(Payani(
+				data[-self.sl.value():,[0,3]],color='r')) #add COV    
+				
 	def mouseMoved(self,evt):
 		pos = evt[0]  ## using signal proxy turns original arguments into a tuple
 		if self.Pax.sceneBoundingRect().contains(pos):
@@ -110,7 +126,7 @@ class Plot_Panel(QWidget):
 				data = ModifyDictaToPrint(self.dicdata[int(mousePoint.x())])
 				self.parentWidget().parentWidget().statusBar.showMessage(
 					mdates.num2date(int(mousePoint.x())).strftime('%Y.%m.%d')+", "+data)
-
+					
 class InputDialog(QWidget):
 	def __init__(self):
 		text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter text:')

@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
 		self.le2 = QLineEdit(self) #make linedit
 
 		self.setCentralWidget(self.le)
-		for stockname in ['بورس']:
+		for stockname in ['وتجارت']:
 			self.plot(Persian(stockname))
 		
 		#Menu Bar
@@ -50,12 +50,22 @@ class MainWindow(QMainWindow):
 				self.CurrentNamad.widget().Property['Period'] = 1
 				self.CurrentNamad.widget().valueChanged()
 				return
+				
 			elif not text and ok:
 				self.CurrentNamad.widget().Property['PeriodP']=False
 				self.CurrentNamad.widget().Property['Period'] = 0
 				self.CurrentNamad.widget().valueChanged()
 				return
 			else:
+				return
+		
+		if a.text()=='COV':
+			item, ok = QInputDialog.getText(self, 'Text Input Dialog', 'Enter your name:')
+			if ok and item:
+				self.CurrentNamad.widget().Property['COVP'] = self.get_data(item)
+				self.CurrentNamad.widget().Property['COV'] = 1
+				self.CurrentNamad.widget().valueChanged()
+				
 				return
 				
 		self.CurrentNamad.widget().Property[a.text()] = [0,1][self.CurrentNamad.widget().Property[a.text()] == 0]

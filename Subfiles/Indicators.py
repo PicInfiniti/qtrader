@@ -45,9 +45,10 @@ class WesternCandlestick(QGraphicsObject): #make WesternCandlestick QGraphicsObj
 #				print (i)
 class Payani(QGraphicsObject): #make Payani Indicator for plot price history
 
-	def __init__(self, data):
+	def __init__(self, data, color='y'):
 		QGraphicsObject.__init__(self)
 		self.data = data  #data must have fields: time, payani
+		self.color = color
 		self.generatePicture() #generate picture
 
 	def generatePicture(self):
@@ -57,7 +58,7 @@ class Payani(QGraphicsObject): #make Payani Indicator for plot price history
 		OFFSET = .4
 		self.picture = QPicture()
 		p = QPainter(self.picture)
-		p.setPen(pg.mkPen('y',width=2))
+		p.setPen(pg.mkPen(self.color,width=2))
 
 		for (Date, payani) in self.data: p.drawLine(QPointF(Date, payani), QPointF(Date+OFFSET, payani))
 
