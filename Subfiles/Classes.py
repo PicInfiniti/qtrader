@@ -36,7 +36,7 @@ class Plot_Panel(QWidget):
 		self.dicdata = DicData(data)
 		Number_of_Bars = len(self.data) #len of history
 
-		# Slider with lable
+		# Ledft Slider with lable
 		self.sl = QSlider() #make slider
 		self.label = QLabel() #make lable for slider
 		self.label.setText(str([Number_of_Bars, self.Property['Bars']]
@@ -45,8 +45,15 @@ class Plot_Panel(QWidget):
 		self.sl.setMaximum(Number_of_Bars) #set maxinmum slider value
 		self.sl.setValue([Number_of_Bars, self.Property['Bars']]
 		                 [Number_of_Bars > self.Property['Bars']]) #set defult slider value
-
 		self.sl.valueChanged.connect(self.valueChanged) #connet to self.valueChanged function when someone change slider
+		
+		# right Slider with lable
+		self.rsl = QSlider() #make slider
+		self.rlabel = QLabel() #make lable for slider
+		self.rlabel.setText(str(0)) #set defult lable
+		self.rsl.setMaximum(self.sl.value()-25) #set maxinmum slider value
+		self.rsl.setValue(0) #set defult slider value
+		self.rsl.valueChanged.connect(self.valueChanged) #connet to self.valueChanged function when someone change slider
 		# create price axis
 		self.Pfigure = pg.GraphicsWindow()
 		self.Pax = self.Pfigure.addPlot(0, 0, axisItems={'bottom': TimeAxisItem(orientation='bottom')}) #make axis with & custom timeaxis
@@ -89,25 +96,33 @@ class Plot_Panel(QWidget):
 		Hlayout = QHBoxLayout() 
 		Hlayout.addLayout(Vlayout)
 		Hlayout.addWidget(self.Pfigure) #add figure to Hlyaout
-
+		
+		# make a vertical layout right slider
+		Vlayout = QVBoxLayout() 
+		Vlayout.addWidget(self.rlabel) #add lable to Vlayout
+		Vlayout.addWidget(self.rsl) #add slider to Vlayout
+		Hlayout.addLayout(Vlayout)
 		# add every thing to Mlayout
 		self.setLayout(Hlayout)
 
 	def valueChanged(self): #run when slider changed
+		self.sl.setMinimum(self.rsl.value()+25)
+		self.rsl.setMaximum(self.sl.value()-25)
 		self.label.setText(str(self.sl.value())) #update slider lable
+		self.rlabel.setText(str(self.rsl.value())) #update slider lable
 		self.Pax.clear() #clearPax axes for new plot
 		if self.Property['Cross']:
 			self.Pax.addItem(self.vLine, ignoreBounds=True)
 			self.Pax.addItem(self.hLine, ignoreBounds=True)
 		if self.Property['WesternCandlestick']:
 			self.Pax.addItem(WesternCandlestick(
-				self.data[-self.sl.value():,[0,1,2,3,4,5]])) #plot new WesternCandlestick
+				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,1,2,3,4,5]])) #plot new WesternCandlestick
 		if self.Property['Payani']:
 			self.Pax.addItem(Payani(
-				self.data[-self.sl.value():,[0,3]])) #add Payani
+				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,3]])) #add Payani
 		if self.Property['Boundary']:
 			self.Pax.addItem(Boundary(
-				self.data[-self.sl.value():,[0,3]])) #add Boundary
+				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,3]])) #add Boundary
 		if self.Property['Period']:
 			self.Pax.addItem(Period2
 				(self.data[-self.sl.value():,[0,1,2]], self.Property['PeriodP'][0], self.Property['PeriodP'][1]))
