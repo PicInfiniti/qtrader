@@ -18,16 +18,21 @@ class MainWindow(QMainWindow):
 		self.List = sorted(self.List.transpose()[0])
 
 		# linedit widget
+		bANDle = QWidget()
 		self.le = QLineEdit(self) #make linedit
 		self.le.textChanged.connect(self.refine) #convert text to arbic
 		self.completer = QCompleter() #make autocompleter
 		self.completer.setModel(QStringListModel(self.List)) #add List of stock to completer
 		self.le.setCompleter(self.completer) #connect copmpleter to linedit
 		self.le.returnPressed.connect(self.pushButtonOK) #connect to pushButtonOK function after press ENTER
+		self.b = QPushButton("COV")
+		self.b.setCheckable(True)
+		Hlayout = QHBoxLayout()
+		Hlayout.addWidget(self.b)
+		Hlayout.addWidget(self.le)
+		bANDle.setLayout(Hlayout)
 		
-		self.le2 = QLineEdit(self) #make linedit
-
-		self.setCentralWidget(self.le)
+		self.setCentralWidget(bANDle)
 		for stockname in ['وتجارت']:
 			self.plot(Persian(stockname))
 		
@@ -81,12 +86,21 @@ class MainWindow(QMainWindow):
 			self.plot(stockname)
 
 	def plot(self, stockname, Bars=300): #open new tab and plot on it
-		dock = QDockWidget(stockname,self)
-		dock.mousePressEvent = lambda x: assign(self, dock)
+		if self.b.isChecked():
+			Namad = self.CurrentNamad.widget()
+			Pax = Namad.Pax
+			data = self.get_data(stockname)
+			Pax.addItem(Payani(
+				data[-Namad.sl.value():,[0,3]],color='r')) #add COV   
+			
+		else:
+			dock = QDockWidget(stockname,self)
+			dock.mousePressEvent = lambda x: assign(self, dock)
 
-		dock.setWidget(Plot_Panel(stockname, self.get_data(stockname)))
-		self.addDockWidget(Qt.TopDockWidgetArea, dock)
-		self.CurrentNamad = dock
+			dock.setWidget(Plot_Panel(stockname, self.get_data(stockname)))
+			self.addDockWidget(Qt.TopDockWidgetArea, dock)
+			self.CurrentNamad = dock
+			
 		
 	def get_data(self, stockname): #extarct history from database
 		try:
