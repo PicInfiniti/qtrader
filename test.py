@@ -21,7 +21,7 @@ p1 = win.addPlot(row=1, col=0)
 p2 = win.addPlot(row=2, col=0)
 
 region = pg.LinearRegionItem()
-#region.setZValue(10)
+region.setZValue(10)
 # Add the LinearRegionItem to the ViewBox, but tell the ViewBox to exclude this 
 # item when doing auto-range calculations.
 p2.addItem(region, ignoreBounds=True)
@@ -38,14 +38,22 @@ data2 = 15000 + 15000 * pg.gaussianFilter(np.random.random(size=10000), 10) + 30
 p1.plot(data1, pen="r")
 p1.plot(data2, pen="g")
 
+p2.plot(data1, pen="w")
 
 def update():
-    #region.setZValue(10)
+    region.setZValue(10)
     minX, maxX = region.getRegion()
-    p1.setXRange(minX, maxX, padding=0)    
+    print(region.getRegion())
+    p1.setXRange(minX, maxX, padding=0)
+    p1.setYRange(18000, 20000, padding=0)    
 
 region.sigRegionChanged.connect(update)
 
+def updateRegion(window, viewRange):
+    rgn = viewRange[0]
+    region.setRegion(rgn)
+
+#p1.sigRangeChanged.connect(updateRegion)
 
 region.setRegion([1000, 2000])
 

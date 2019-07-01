@@ -58,10 +58,12 @@ class Plot_Panel(QWidget):
 		self.Pfigure = pg.GraphicsWindow()
 		self.Pax = self.Pfigure.addPlot(0, 0, axisItems={'bottom': TimeAxisItem(orientation='bottom')}) #make axis with & custom timeaxis
 		self.Pax.showGrid(x=True, y=True)
+		self.Pax.setAutoVisible(y=True)
 		self.proxy = pg.SignalProxy(self.Pax.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
 		self.vLine = pg.InfiniteLine(angle=90, movable=False)
 		self.hLine = pg.InfiniteLine(angle=0, movable=False, label='Price={value:0.2f} irr', labelOpts={'position':.1, 'color': (200,200,100), 'fill': (200,200,200,50)})
-
+		self.Pax.plot(data[:,0],data[:,1], pen="r")
+		self.Pax.plot(data[:,0],data[:,2], pen="g")
 		if self.Property['Cross']:
 			self.Pax.addItem(self.vLine, ignoreBounds=True)
 			self.Pax.addItem(self.hLine, ignoreBounds=True)
@@ -110,27 +112,31 @@ class Plot_Panel(QWidget):
 		self.rsl.setMaximum(self.sl.value()-25)
 		self.label.setText(str(self.sl.value())) #update slider lable
 		self.rlabel.setText(str(self.rsl.value())) #update slider lable
-		self.Pax.clear() #clearPax axes for new plot
-		if self.Property['Cross']:
-			self.Pax.addItem(self.vLine, ignoreBounds=True)
-			self.Pax.addItem(self.hLine, ignoreBounds=True)
-		if self.Property['WesternCandlestick']:
-			self.Pax.addItem(WesternCandlestick(
-				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,1,2,3,4,5]])) #plot new WesternCandlestick
-		if self.Property['Payani']:
-			self.Pax.addItem(Payani(
-				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,3]])) #add Payani
-		if self.Property['Boundary']:
-			self.Pax.addItem(Boundary(
-				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,3]])) #add Boundary
-		if self.Property['Period']:
-			self.Pax.addItem(Period2
-				(self.data[-self.sl.value():,[0,1,2]], self.Property['PeriodP'][0], self.Property['PeriodP'][1]))
-		if self.Property['COV']:
-			data = self.Property['COVP']
-			self.Pax.addItem(Payani(
-				data[-self.sl.value():len(data)-self.rsl.value(),[0,3]],color='r')) #add COV    
-				
+		minX = self.data[-self.sl.value(),0]
+		maxX = self.data[-self.rsl.value(),0]
+		self.Pax.setXRange(minX, maxX, padding=0)
+		#self.Pax.setYRange(18000, 20000, padding=0)
+#		self.Pax.clear() #clearPax axes for new plot
+#		if self.Property['Cross']:
+#			self.Pax.addItem(self.vLine, ignoreBounds=True)
+#			self.Pax.addItem(self.hLine, ignoreBounds=True)
+#		if self.Property['WesternCandlestick']:
+#			self.Pax.addItem(WesternCandlestick(
+#				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,1,2,3,4,5]])) #plot new WesternCandlestick
+#		if self.Property['Payani']:
+#			self.Pax.addItem(Payani(
+#				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,3]])) #add Payani
+#		if self.Property['Boundary']:
+#			self.Pax.addItem(Boundary(
+#				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,3]])) #add Boundary
+#		if self.Property['Period']:
+#			self.Pax.addItem(Period2
+#				(self.data[-self.sl.value():,[0,1,2]], self.Property['PeriodP'][0], self.Property['PeriodP'][1]))
+#		if self.Property['COV']:
+#			data = self.Property['COVP']
+#			self.Pax.addItem(Payani(
+#				data[-self.sl.value():len(data)-self.rsl.value(),[0,3]],color='r')) #add COV    
+#				
 	def mouseMoved(self,evt):
 		pos = evt[0]  ## using signal proxy turns original arguments into a tuple
 		if self.Pax.sceneBoundingRect().contains(pos):
