@@ -33,8 +33,7 @@ def ToolBar(self):
 		tb.addAction(cross)
 		period = QAction(QIcon("Subfiles/pic/Pa.png"), "Period", self)
 		tb.addAction(period)
-		COV = QAction("COV", self)
-		tb.addAction(COV)
+
 		
 		tb.actionTriggered[QAction].connect(self.toolbtnpressed)
 		

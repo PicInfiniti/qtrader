@@ -41,10 +41,12 @@ class Plot_Panel(QWidget):
 		self.label = QLabel() #make lable for slider
 		self.label.setText(str([Number_of_Bars, self.Property['Bars']]
 		                 [Number_of_Bars > self.Property['Bars']])) #set defult lable
+		                 
 		self.sl.setMinimum(25) #set minimu slider value
 		self.sl.setMaximum(Number_of_Bars) #set maxinmum slider value
 		self.sl.setValue([Number_of_Bars, self.Property['Bars']]
 		                 [Number_of_Bars > self.Property['Bars']]) #set defult slider value
+		                 
 		self.sl.valueChanged.connect(self.valueChanged) #connet to self.valueChanged function when someone change slider
 		
 		# right Slider with lable
@@ -62,29 +64,15 @@ class Plot_Panel(QWidget):
 		self.proxy = pg.SignalProxy(self.Pax.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved)
 		self.vLine = pg.InfiniteLine(angle=90, movable=False)
 		self.hLine = pg.InfiniteLine(angle=0, movable=False, label='Price={value:0.2f} irr', labelOpts={'position':.1, 'color': (200,200,100), 'fill': (200,200,200,50)})
-		self.Pax.plot(data[:,0],data[:,1], pen="r")
-		self.Pax.plot(data[:,0],data[:,2], pen="g")
-		if self.Property['Cross']:
-			self.Pax.addItem(self.vLine, ignoreBounds=True)
-			self.Pax.addItem(self.hLine, ignoreBounds=True)
-		# add graphical object to Pax
-		if self.Property['WesternCandlestick']:
-			self.Pax.addItem(WesternCandlestick(
-				self.data[-self.Property['Bars']:,[0,1,2,3,4,5]])) #add WesternCandlestick
-		if self.Property['Payani']:
-			self.Pax.addItem(Payani(
-				self.data[-self.Property['Bars']:,[0,3]])) #add Payani
-		if self.Property['Boundary']:
-			self.Pax.addItem(Boundary(
-				self.data[-self.Property['Bars']:,[0,3]])) #add Boundary
-		if self.Property['Period']:
-			self.Pax.addItem(Period2(
-				self.data[-self.Property['Bars']:,[0,1,2]], self.Property['PeriodP'][0], self.Property['PeriodP'][1]))
-				
-		if self.Property['COV']:
-			data = self.Property['COVP']
-			self.Pax.addItem(Payani(
-				data[-self.Property['Bars']:,[0,3]],color='r')) #add COV
+#		self.Pax.plot(data[:,0],data[:,1], pen="r")
+#		self.Pax.plot(data[:,0],data[:,2], pen="g")
+		minX = self.data[-self.sl.value(),0]
+		maxX = self.data[-1,0]
+		minY = min(self.data[-self.sl.value():,2])
+		maxY = max(self.data[-self.sl.value():,1])
+		self.Pax.setXRange(minX, maxX, padding=0)
+		self.Pax.setYRange(minY, maxY, padding=0)
+		self.Plot()
 
 		# Hlayout is main layout
 		Mlayout = QVBoxLayout()
@@ -113,30 +101,12 @@ class Plot_Panel(QWidget):
 		self.label.setText(str(self.sl.value())) #update slider lable
 		self.rlabel.setText(str(self.rsl.value())) #update slider lable
 		minX = self.data[-self.sl.value(),0]
-		maxX = self.data[-self.rsl.value(),0]
+		maxX = self.data[-1,0]
+		minY = min(self.data[-self.sl.value():,2])
+		maxY = max(self.data[-self.sl.value():,1])
 		self.Pax.setXRange(minX, maxX, padding=0)
-		#self.Pax.setYRange(18000, 20000, padding=0)
-#		self.Pax.clear() #clearPax axes for new plot
-#		if self.Property['Cross']:
-#			self.Pax.addItem(self.vLine, ignoreBounds=True)
-#			self.Pax.addItem(self.hLine, ignoreBounds=True)
-#		if self.Property['WesternCandlestick']:
-#			self.Pax.addItem(WesternCandlestick(
-#				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,1,2,3,4,5]])) #plot new WesternCandlestick
-#		if self.Property['Payani']:
-#			self.Pax.addItem(Payani(
-#				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,3]])) #add Payani
-#		if self.Property['Boundary']:
-#			self.Pax.addItem(Boundary(
-#				self.data[-self.sl.value():len(self.data)-self.rsl.value(),[0,3]])) #add Boundary
-#		if self.Property['Period']:
-#			self.Pax.addItem(Period2
-#				(self.data[-self.sl.value():,[0,1,2]], self.Property['PeriodP'][0], self.Property['PeriodP'][1]))
-#		if self.Property['COV']:
-#			data = self.Property['COVP']
-#			self.Pax.addItem(Payani(
-#				data[-self.sl.value():len(data)-self.rsl.value(),[0,3]],color='r')) #add COV    
-#				
+		self.Pax.setYRange(minY, maxY, padding=0)
+
 	def mouseMoved(self,evt):
 		pos = evt[0]  ## using signal proxy turns original arguments into a tuple
 		if self.Pax.sceneBoundingRect().contains(pos):
@@ -147,7 +117,25 @@ class Plot_Panel(QWidget):
 				data = ModifyDictaToPrint(self.dicdata[int(mousePoint.x())])
 				self.parentWidget().parentWidget().statusBar.showMessage(
 					mdates.num2date(int(mousePoint.x())).strftime('%Y.%m.%d')+", "+data)
-					
+	def Plot(self):
+		self.Pax.clear() #clearPax axes for new plot
+		if self.Property['Cross']:
+			self.Pax.addItem(self.vLine, ignoreBounds=True)
+			self.Pax.addItem(self.hLine, ignoreBounds=True)
+		# add graphical object to Pax
+		if self.Property['WesternCandlestick']:
+			self.Pax.addItem(WesternCandlestick(
+				self.data[:,[0,1,2,3,4,5]])) #add WesternCandlestick
+		if self.Property['Payani']:
+			self.Pax.addItem(Payani(
+				self.data[:,[0,3]])) #add Payani
+		if self.Property['Boundary']:
+			self.Pax.addItem(Boundary(
+				self.data[:,[0,3]])) #add Boundary
+		if self.Property['Period']:
+			self.Pax.addItem(Period2(
+				self.data[:,[0,1,2]], self.Property['PeriodP'][0], self.Property['PeriodP'][1]))
+				
 class InputDialog(QWidget):
 	def __init__(self):
 		text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter text:')

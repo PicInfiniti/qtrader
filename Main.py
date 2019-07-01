@@ -53,13 +53,13 @@ class MainWindow(QMainWindow):
 				walker = mdates.date2num(jdt.date.togregorian(dt.datetime.strptime(walker, '%Y%m%d')))#BBBBUUUUGGGG
 				self.CurrentNamad.widget().Property['PeriodP'] = [int(jump), walker]
 				self.CurrentNamad.widget().Property['Period'] = 1
-				self.CurrentNamad.widget().valueChanged()
+				self.CurrentNamad.widget().Plot()
 				return
 				
 			elif not text and ok:
 				self.CurrentNamad.widget().Property['PeriodP']=False
 				self.CurrentNamad.widget().Property['Period'] = 0
-				self.CurrentNamad.widget().valueChanged()
+				self.CurrentNamad.widget().Plot()
 				return
 			else:
 				return
@@ -69,12 +69,12 @@ class MainWindow(QMainWindow):
 			if ok and item:
 				self.CurrentNamad.widget().Property['COVP'] = self.get_data(item)
 				self.CurrentNamad.widget().Property['COV'] = 1
-				self.CurrentNamad.widget().valueChanged()
+				self.CurrentNamad.widget().Plot()
 				
 				return
 				
 		self.CurrentNamad.widget().Property[a.text()] = [0,1][self.CurrentNamad.widget().Property[a.text()] == 0]
-		self.CurrentNamad.widget().valueChanged()
+		self.CurrentNamad.widget().Plot()
 		
 	def refine(self): #refine entry text in self.le
 		stockname = Persian(self.le.text())
