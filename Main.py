@@ -63,15 +63,7 @@ class MainWindow(QMainWindow):
 				return
 			else:
 				return
-		
-		if a.text()=='COV':
-			item, ok = QInputDialog.getText(self, 'Text Input Dialog', 'Enter your name:')
-			if ok and item:
-				self.CurrentNamad.widget().Property['COVP'] = self.get_data(item)
-				self.CurrentNamad.widget().Property['COV'] = 1
-				self.CurrentNamad.widget().Plot()
-				
-				return
+	
 				
 		self.CurrentNamad.widget().Property[a.text()] = [0,1][self.CurrentNamad.widget().Property[a.text()] == 0]
 		self.CurrentNamad.widget().Plot()
@@ -91,7 +83,7 @@ class MainWindow(QMainWindow):
 			Pax = Namad.Pax
 			data = self.get_data(stockname)
 			Pax.addItem(Payani(
-				data[-Namad.sl.value():,[0,3]],color='r')) #add COV   
+				data[:,[0,3]],color='r')) #add COV   
 			
 		else:
 			dock = QDockWidget(stockname,self)

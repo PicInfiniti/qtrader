@@ -89,9 +89,9 @@ class Plot_Panel(QWidget):
 		
 		# make a vertical layout right slider
 		Vlayout = QVBoxLayout() 
-		Vlayout.addWidget(self.rlabel) #add lable to Vlayout
-		Vlayout.addWidget(self.rsl) #add slider to Vlayout
-		Hlayout.addLayout(Vlayout)
+#		Vlayout.addWidget(self.rlabel) #add lable to Vlayout
+#		Vlayout.addWidget(self.rsl) #add slider to Vlayout
+#		Hlayout.addLayout(Vlayout)
 		# add every thing to Mlayout
 		self.setLayout(Hlayout)
 
